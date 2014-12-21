@@ -44,5 +44,5 @@ object item4 {
 	}                                         //> millerRabin: (n: Int)Boolean
 	millerRabin(12)                           //> res4: Boolean = false
 	millerRabin(13)                           //> res5: Boolean = true
-	millerRabin(1105)                         //> res6: Boolean = false
+	millerRabin(1105)                         //> res6: Boolean = true
 }
