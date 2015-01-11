@@ -1,4 +1,4 @@
-##Structure and Interpretation of Computer Programs..
+##Structure and Interpretation of Computer Programs.
 
 ###about
 play with exercise.. using ``scala`` and ``haskell``
