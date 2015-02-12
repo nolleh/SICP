@@ -32,9 +32,8 @@ mul_interval iv1 iv2 = let
 --    upper_iv1 * upper_iv2 - upper_iv1 * lower_iv2 
 --      - lower_iv1 * upper_iv2 + lower_iv1 * lower_iv2 
 
-display iv = do
-  print $ lower_bound iv 
-  print $ upper_bound iv
+display iv = 
+  print (lower_bound iv, upper_bound iv)
 
 main = let 
   iv1 = make_interval 3 5

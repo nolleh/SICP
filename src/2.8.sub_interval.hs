@@ -13,8 +13,7 @@ upper_bound iv = iv (\p q-> max p q)
 sub_interval iv1 iv2 = 
 	make_interval ((lower_bound iv1) - (lower_bound iv2)) ((upper_bound iv1) - (upper_bound iv2)) 
 
-display iv = do
-	print $ lower_bound iv 
-	print $ upper_bound iv
+display iv = 
+  print (lower_bound iv, upper_bound iv)
 
 main = display (sub_interval (make_interval 3 5) (make_interval 1 5))
