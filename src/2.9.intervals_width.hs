@@ -4,7 +4,7 @@
 
 -- 1. new_width = (upper_bound new_interval) - (lower_bound new_interval)
 -- 2. .. = (upper_bound (make_interval (lower_bound iv1 + lower_bound iv2) 
---								    (upper_bound iv1 + upper_bound iv2) ) ) -
+--                                     (upper_bound iv1 + upper_bound iv2) ) ) -
 --         (lower_bound (make_interval (....) ) )
 -- 3.    = (upper_bound iv1 + upper_bound iv2) - (lower_bound iv1 + lower_bound iv2)
 -- 4.    = (upper_bound iv1 - lower_bound iv1) + (upper_bound iv2 - lower_bound iv2)
@@ -21,25 +21,25 @@ lower_bound iv = iv (\p q-> min p q)
 upper_bound iv = iv (\p q-> max p q)
 
 mul_interval iv1 iv2 = let 
-	p1 = (lower_bound iv1) * (lower_bound iv2)
-	p2 = (lower_bound iv1) * (upper_bound iv2)
-	p3 = (upper_bound iv1) * (lower_bound iv2) 
-	p4 = (upper_bound iv1) * (upper_bound iv2) 
-	in make_interval (minimum [p1, p2, p3, p4]) (maximum [p1, p2, p3, p4])
+  p1 = (lower_bound iv1) * (lower_bound iv2)
+  p2 = (lower_bound iv1) * (upper_bound iv2)
+  p3 = (upper_bound iv1) * (lower_bound iv2) 
+  p4 = (upper_bound iv1) * (upper_bound iv2) 
+  in make_interval (minimum [p1, p2, p3, p4]) (maximum [p1, p2, p3, p4])
 -- 피연산 구간들의 width 의 곱이 두 구간의 곱의 width 와 상이하려면
 -- 피연산 구간들의 width 곱 = 
--- 		(upper_bound iv1 - lower_bound iv1) * (upper_bound iv2 - lower_bound iv2) 
---  upper_iv1 * upper_iv2 - upper_iv1 * lower_iv2 
---     - lower_iv1 * upper_iv2 + lower_iv1 * lower_iv2 
+--   (upper_bound iv1 - lower_bound iv1) * (upper_bound iv2 - lower_bound iv2) 
+--    upper_iv1 * upper_iv2 - upper_iv1 * lower_iv2 
+--      - lower_iv1 * upper_iv2 + lower_iv1 * lower_iv2 
 
 display iv = do
-	print $ lower_bound iv 
-	print $ upper_bound iv
+  print $ lower_bound iv 
+  print $ upper_bound iv
 
 main = let 
-		iv1 = make_interval 3 5
-		iv2 = make_interval 4 5
-		in do 
-			print $ (upper_bound iv1 - lower_bound iv1) * (upper_bound iv2 - lower_bound iv2)
-			print $ "---- 3*4 / 5*5 ----"
-			display (mul_interval iv1 iv2)
+  iv1 = make_interval 3 5
+  iv2 = make_interval 4 5
+  in do 
+    print $ (upper_bound iv1 - lower_bound iv1) * (upper_bound iv2 - lower_bound iv2) --2
+    print $ "---- 3*4 / 5*5 ----"
+    display (mul_interval iv1 iv2)  -- 12 25
