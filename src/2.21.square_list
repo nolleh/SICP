@@ -1,7 +1,0 @@
--- 2.21. square_list
-square_list [] = error "empty"
-square_list (x:xs) = [x * x] ++ (square_list xs)
-
-
-main = do
-  print $ square_lit [1, 2, 3, 4]
