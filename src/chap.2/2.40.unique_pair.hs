@@ -18,6 +18,6 @@ is_prime n = all (\x-> (mod n x)/=0) [2..(floor (sqrt $ fromIntegral n))]
 --test (x:xs) = x+xs
 
 main = do
-	print $ unique_pairs 3
-	print $ prime_sum_pairs 3
+	print $ unique_pairs 3 -- [[2,1],[3,1],[3,2]]
+	print $ prime_sum_pairs 3 -- [[2,1,3],[3,2,5]]
 	--print $ test [2,3]
