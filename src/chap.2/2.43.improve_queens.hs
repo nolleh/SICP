@@ -6,7 +6,8 @@ queens board_size = queens_cols board_size
 		| k == 0 = empty_board
 		| otherwise = filter (\positions -> (is_safe k positions))
 						(concatMap (\rest_of_queens -> 
-							(map (\new_row -> trace (show 1) (adjoin_position new_row k rest_of_queens)) -- [] 
+							(map (\new_row -> trace ("(1):[" ++ show new_row ++ ","++show k++"]" ++ ":" ++ show rest_of_queens) 
+										(adjoin_position new_row k rest_of_queens)) -- [] 
 							[1..board_size]))
 						(queens_cols (k-1)))
 
@@ -15,7 +16,8 @@ queens1 board_size = queens_cols board_size
 		| k == 0 = empty_board
 		| otherwise = filter (\positions -> (is_safe k positions))
 						(concatMap (\new_row -> 
-							(map (\rest_of_queens -> trace (show 1) (adjoin_position new_row k rest_of_queens)) -- [] 
+							(map (\rest_of_queens -> trace ("(2):[" ++ show new_row ++ ","++show k++"]" ++ ":" ++ show rest_of_queens) 
+										(adjoin_position new_row k rest_of_queens)) -- [] 
 							(queens_cols (k-1))))
 						[1..board_size])
 
@@ -36,5 +38,21 @@ is_safe k (x:xs)
 
 
 main = do
-	-- 60
-	print $ queens1 4 -- 624
+	print $ queens 2
+	print $ queens1 2
+
+
+--(1):[1,1]:[]
+--(1):[1,2]:[[1,1]]
+--(1):[2,2]:[[1,1]]
+--(1):[2,1]:[]
+--(1):[1,2]:[[2,1]]
+--(1):[2,2]:[[2,1]]
+--(2):[1,1]:[]
+--(2):[1,2]:[[1,1]]
+--(2):[2,1]:[]
+--(2):[1,2]:[[2,1]]
+--(2):[1,1]:[]
+--(2):[2,2]:[[1,1]]
+--(2):[2,1]:[]
+--(2):[2,2]:[[2,1]]
