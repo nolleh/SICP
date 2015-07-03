@@ -20,13 +20,13 @@
     (let ((paint-lower
            (transform-painter painter1
                               (make-vect 0.0 0.0)
-                              (make-vect 0.0 1.0)
+                              (make-vect 1.0 0.0)
                               split-point))
           (paint-upper
            (transform-painter painter2
                               split-point
-                              (make-vect 0.0 1.0)
-                              (make-vect 0.0 0.5))))
+                              (make-vect 1.0 0.0)
+                              (make-vect 0.0 1.0))))
       (lambda (frame)
         (paint-left frame)
         (paint-right frame)))))
@@ -34,4 +34,6 @@
 
 ; 2
 (define (below painter1 painter2)
-  (rotate90 (beside painter1 painter2)))
+  (let (lower (rotate90 painter1)))
+  (let (higher (rotate90 painter2)))
+  (rotate270 (beside (lower higher))))
