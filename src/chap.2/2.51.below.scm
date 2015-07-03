@@ -30,3 +30,8 @@
       (lambda (frame)
         (paint-left frame)
         (paint-right frame)))))
+
+
+; 2
+(define (below painter1 painter2)
+  (rotate90 (beside painter1 painter2)))
