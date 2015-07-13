@@ -81,15 +81,8 @@
 ; different pattern. (For example, you might make the big Mr. Rogers look outward from each corner of the
 ; square.)
 
+;모서리, 바깥쪽보도록.
 (define (square-limit painter n)
-  (let ((quarter (corner-split painter n)))
-    (let ((half (beside (flip-horiz quarter) quarter)))
-      (below (flip-vert half) half))))
-
-(define (square-limit painter n)
-  (let tl (flip-horiz (corner-split painter n))
-    (let tr (corner-split painter n))
-      (let bl (flip-vert tl)
-        (let br (flip-vert tr))
-          (square-of-four tl tr bl br painter))
-
+  (let (combine4 (square-of-four identity flip-horiz
+                                 flip-vert rotate180)))
+  (combine4 (corner-split painter n)))
