@@ -31,8 +31,11 @@
 ; a. Do the two procedures produce the same result for every tree? 
 ; If not, how do the results differ? What
 ; lists do the two procedures produce for the trees in figure 2.16?
+; => YES..? .. the every result is (1 3 5 7 9 11)
 
 ; b. Do the two procedures have the same order of growth 
 ; in the number of steps required to convert a
 ; balanced tree with n elements to a list? 
 ; If not, which one grows more slowly?
+; => NO. the first one has 2N + (sum of left branch's left length)
+;        the second one has 2N

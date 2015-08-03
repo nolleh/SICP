@@ -15,3 +15,10 @@
                             (remaining-elts (cdr right-result)))
                         (cons (make-tree this-entry left-tree right-tree)
                             remaining-elts))))))))
+
+; a. using sorted list, divide as 3part, first half as left branches 
+; / next one elements as entry / rest elements as right branches, 
+; makes trees. (5 (1 '() 3 ) (9 7 11))
+
+
+; b. maybe theta (n) ..?
