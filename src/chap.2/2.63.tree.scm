@@ -25,8 +25,9 @@
                             result-list)))))
     (copy-to-list tree '()))
     
-(tree->list-1 (make-tree 7 (make-tree 3 1 5) (make-tree 9 '() 11)))
-
+(tree->list-1 (make-tree 7 (make-tree 3 (make-tree 1 `() `()) (make-tree 5 `() `()))  
+                           (make-tree 9 '() (make-tree 11 `() `() ))))
+;(1 3 5 7 9 11)
 
 ; a. Do the two procedures produce the same result for every tree? 
 ; If not, how do the results differ? What
@@ -37,5 +38,5 @@
 ; in the number of steps required to convert a
 ; balanced tree with n elements to a list? 
 ; If not, which one grows more slowly?
-; => NO. the first one has 2N + (sum of left branch's left length)
-;        the second one has 2N
+; => NO. the first one has n * log n ( every depth's comp.=> n/2 * depth.=> logn )
+;        the second one has n
