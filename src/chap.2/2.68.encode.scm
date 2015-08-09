@@ -1,3 +1,4 @@
+
 (define (make-leaf symbol weight)
     (list 'leaf symbol weight))
 (define (leaf? object)
@@ -55,23 +56,27 @@
         (append (encode-symbol (car message) tree)
                 (encode (cdr message) tree))))
 (define sample-decoded-message '(A D A B B C A))
-
-; brute force .. ing         
+         
 (define (encode-symbol char tree)
     (define (iter-encode char tree bits)
         (if (leaf? tree)
-            (if (equal? (symbol-leaf tree) char) bits
+            (if (eq? (symbol-leaf tree) char) bits
                 (error "bad tree"))
-            
-            (if (element-of-set? char (symbols tree)) (iter-encode char 
+            (let (next-branch (choose-branch char tree))
+                (encode-symbol char tree))))
+    (iter-encode char tree '0))
                 
-    
-    (let result (car (iter-encode char tree '0))                      
-        (if (equal? result 1)
-            (cdr result)
-            (error "bad char"))))
+(define (choose-branch char tree)
+    (if (element-of-set? char (symbols (left-branch tree)))
+        (left-branch tree)
+        (right-branch tree)))
+(define (element-of-set? x set)
+    (cond ((null? set) false)
+          ((eq? x (car set)) true)
+          (else (element-of-set? x (cdr set)))))
+; (display (element-of-set? 'B (symbols (right-branch sample-tree))))
+; (choose-branch 'A sample-tree)
 
-
-(display sample-decoded-message)
-;(encode sample-decoded-message sample-tree)
+; (display sample-decoded-message)
+(encode sample-decoded-message sample-tree)
                 
