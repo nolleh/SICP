@@ -62,7 +62,7 @@
         (if (leaf? tree)
             (if (eq? (symbol-leaf tree) char) bits
                 (error "bad tree"))
-            (let (next-branch (choose-branch char tree))
+            (let ((next-branch (choose-branch char tree)))
                 (encode-symbol char tree))))
     (iter-encode char tree '0))
                 
@@ -71,12 +71,11 @@
         (left-branch tree)
         (right-branch tree)))
 (define (element-of-set? x set)
-    (cond ((null? set) false)
-          ((eq? x (car set)) true)
+    (cond ((null? set) #f)
+          ((eq? x (car set)) #t)
           (else (element-of-set? x (cdr set)))))
 ; (display (element-of-set? 'B (symbols (right-branch sample-tree))))
 ; (choose-branch 'A sample-tree)
 
 ; (display sample-decoded-message)
-(encode sample-decoded-message sample-tree)
-                
+; (encode sample-decoded-message sample-tree)
