@@ -45,7 +45,7 @@
                     (make-leaf 'B 2)
                     (make-code-tree (make-leaf 'D 1)
                                     (make-leaf 'C 1)))))
-                                    
+
 (define sample-message '(0 1 1 0 0 1 0 1 0 1 1 1 0))
 
 ;(decode sample-message sample-tree)
@@ -58,24 +58,23 @@
 (define sample-decoded-message '(A D A B B C A))
          
 (define (encode-symbol char tree)
-    (define (iter-encode char tree bits)
-        (if (leaf? tree)
-            (if (eq? (symbol-leaf tree) char) bits
-                (error "bad tree"))
-            (let ((next-branch (choose-branch char tree)))
-                (encode-symbol char tree))))
-    (iter-encode char tree '0))
+    (if (leaf? tree)
+        (if (eq? (symbol-leaf tree) char) '()
+            (error "bad tree"))
+            (if (element-of-set? char (symbols (left-branch tree)))
+                (cons 0 (encode-symbol char (left-branch tree)))
+                (cons 1 (encode-symbol char (right-branch tree))))))
                 
 (define (choose-branch char tree)
     (if (element-of-set? char (symbols (left-branch tree)))
         (left-branch tree)
         (right-branch tree)))
+
 (define (element-of-set? x set)
     (cond ((null? set) #f)
           ((eq? x (car set)) #t)
           (else (element-of-set? x (cdr set)))))
 ; (display (element-of-set? 'B (symbols (right-branch sample-tree))))
-; (choose-branch 'A sample-tree)
-
-; (display sample-decoded-message)
-; (encode sample-decoded-message sample-tree)
+; (display (choose-branch 'A sample-tree))
+; (display (encode-symbol 'A (list 'leaf 'a 4)))
+(display (encode sample-decoded-message sample-tree)) ; (0 1 1 0 0 1 0 1 0 1 1 1 0)
