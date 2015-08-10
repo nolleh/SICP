@@ -60,10 +60,10 @@
 ; (((leaf h 1) (leaf g 1) (h g) 2) (leaf f 1) (leaf e 1) (leaf d 1) (leaf c 1) (leaf b 3) (leaf a 8))
 (display (cons (make-code-tree (car sample-leaf-set) (cadr sample-leaf-set)) (cddr sample-leaf-set)))
 
-(define (successive-merge leaf-set)
-	(cond ((null? leaf-set) '())
-		  (else (cons (make-code-tree (car leaf-set) (cadr leaf-set)) 
-		  		(successive-merge (cddr leaf-set))))))
+;(define (successive-merge leaf-set)
+;	(cond ((null? leaf-set) '())
+;		  (else (successive-merge (cons (make-code-tree (car leaf-set) (cadr leaf-set)) 
+;		  		 (cddr leaf-set))))))
 
 ;(((leaf h 1) (leaf g 1) (h g) 2) ((leaf f 1) (leaf e 1) (f e) 2) ((leaf d 1) (leaf c 1) (d c) 2) ((leaf b 3) (leaf a 8) (b a) 11))
-(display (successive-merge sample-leaf-set))
+;(display (successive-merge sample-leaf-set))
