@@ -17,7 +17,12 @@
 ; cf. ((sum? exp) (make-sum (deriv (addend exp) var)
 ;                           (deriv (augend exp) var)))
 
-(define (install-sum-package)
+; c. same extension with b
+
+; d. op + type => type + op.
+; >> put operation parameter alignment is only changed.. 
+
+(define (install-exercise-package)
 
   (define (deriv-sum exp var) 
     (make-sum (deriv (addend exp) var) 
@@ -30,10 +35,28 @@
           ((and (number? a1) (number? a2))
                 (+ a1 a2))
           (else (list `+ a1 a2))))
+  
+  (define (deriv-product exp var)
+    (make-sum
+      (make-product (multiplier exp)
+                    (deriv (multiplicand exp) var))
+      (make-product (deriv (multiplier exp) var)
+                           (multiplicand exp))))
+  (define (multiplier p) (cadr p))
+  (define (multiplicand p) (caddr p))
+  (define (make-product m1 m2)
+    (cond ((or (eq? m1 0) (eq? m2 0)) 0)
+        ((eq? m1 1) m2)
+        ((eq? m2 1) m1)
+        ((and (number? m1) (number? m2)) (* m1 m2))
+        (else (list `* m1 m2))))
+  
   (put `deriv `+ deriv-sum) 
+  (put `deriv `* deriv-product)
+
   `done)
 
-(install-sum-package)
+(install-exercise-package)
 (define exp `(+ + x 3))
 (display (deriv exp `x)) ;1
 
@@ -43,15 +66,14 @@
 (display (get `deriv (operator exp))) ; deriv-sum (exp var)
 (display (operands exp)) ; (+ x 3)
 
-;(display (deriv (cadr exp) `x))
+(define exp-prod `(* * x y))
+(display (deriv exp-prod `x)) ; y
 
 ;(deriv '(* x y) 'x)
 ;(+ (* x 0) (* 1 y))
 ;(deriv '(* (* x y) (+ x 3)) 'x)
 ;(+ (* (* x y) (+ 1 0))
 ;(* (+ (* x 0) (* 1 y))
-;(+ x 3)))
-
 
 (define (variable? x) (symbol? x))
 (define (same-variable? v1 v2)
