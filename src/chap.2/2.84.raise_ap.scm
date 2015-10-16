@@ -194,23 +194,23 @@
                  (if (eq? type1 type2) 
                    (error "No method for thease types" (list op type-tags))
                    (let ((t1-level (level type1 tower 0))
-                         (t2-level (level type2 tower 0))
-                         (diff (- t2-level t1-level)))
-                     (if (diff > 0)
-                            (raise-until a2 diff)
-                            (raise-until a1 (* -1 diff)))))
+                         (t2-level (level type2 tower 0)))
+                         (let ((diff (- t2-level t1-level)))
+                               (if (> diff 0)
+                                   (apply-generic op (raise-until a1 diff) a2)
+                                   (apply-generic op a1 (raise-until a2 (* -1 diff))))))))
                (error "No method for these types"
-                      (list op type-tags))))))))
+                      (list op type-tags)))))))
 
 ; super / tower ---> higher index
 (define tower (list 'scheme-number 'rational 'complex))
 (define (level type higherachy index)
-  (cond (null? higherachy) #f
-        (eq? (car higherachy) type) index
-        (else (level type higherachy (cdr higherachy) (+ index 1)))))
+  (cond ((null? higherachy) #f)
+        ((eq? (car higherachy) type) index)
+        (else (level type (cdr higherachy) (+ index 1)))))
 
 (define (raise-until a times)
-  (if (times <= 0) a
+  (if (<= times 0) a
       (raise-until (raise a) (- times 1))))
 
 
@@ -242,6 +242,6 @@
 (install-rectangular-package)
 (install-polar-package)
 
-(raise (make-scheme-number 3))
+(raise (make-scheme-number 3)) ; (rational 3 . 1)
 
-(add (make-scheme-number 3) (make-rational 3 1))
+(add (make-scheme-number 3) (make-rational 3 1)) ; (rational 6 . 1)
