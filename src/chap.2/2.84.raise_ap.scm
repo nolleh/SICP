@@ -5,6 +5,11 @@
 (define (sub x y)    (apply-generic 'sub x y))
 (define (mul x y)    (apply-generic 'mul x y))
 (define (div x y)    (apply-generic 'div x y))
+(define (real-part z) (apply-generic 'real-part z))
+(define (imag-part z) (apply-generic 'imag-part z))
+(define (magnitude z) (apply-generic 'magnitude z))
+(define (angle z) (apply-generic 'angle z))
+
 (define (raise x)    (apply-generic 'raise x))
 
 (define (install-scheme-number-package)
@@ -58,7 +63,7 @@
   (put 'div '(rational rational)
     (lambda (x y) (tag (div-rat x y))))
   (put 'raise '(rational)
-    (lambda (x) (make-complex-from-real-imag x 0)))
+    (lambda (x) (make-complex-from-real-imag (/ (numer x) (denom x)) 0)))
   (put 'make 'rational
     (lambda (n d) (tag (make-rat n d))))
   'done)
@@ -85,14 +90,6 @@
     (make-from-mag-ang (/ (magnitude z1) (magnitude z2))
                (- (angle z1) (angle z2))))
 
-  (define (real-part z)
-      (apply-generic 'real-part z))
-  (define (imag-part z)
-      (apply-generic 'imag-part z))
-  (define (magnitude z)
-      (apply-generic 'magnitude z))
-  (define (angle z)
-      (apply-generic 'angle z))
 
   ;; interface to rest of the system
   (define (tag z) (attach-tag 'complex z))
@@ -104,11 +101,11 @@
     (lambda (z1 z2) (tag (mul-complex z1 z2))))
   (put 'div '(complex complex)
     (lambda (z1 z2) (tag (div-complex z1 z2))))
-  (put 'real-part 'complex 
-    (lambda (z) (real-part z)))
-  (put 'imag-part 'complex imag-part)
-  (put 'magnitude 'complex magnitude)
-  (put 'angle 'complex angle)
+
+  (put 'real-part '(complex) real-part)
+  (put 'imag-part '(complex) imag-part)
+  (put 'magnitude '(complex) magnitude)
+  (put 'angle '(complex) angle)
 
   (put 'raise '(complex)
     (lambda (z) (error "complex doesn't have super type")))
@@ -247,4 +244,4 @@
 
 (add (make-scheme-number 3) (make-rational 3 1)) ; (rational 6 . 1)
 
-(add (make-scheme-number 3) (make-complex-from-real-imag 2 1))
+(add (make-scheme-number 3) (make-complex-from-real-imag 2 1)) ; (complex rectangular 5 . 1)
