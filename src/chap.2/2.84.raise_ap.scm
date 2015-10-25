@@ -96,26 +96,27 @@
 
   ;; interface to rest of the system
   (define (tag z) (attach-tag 'complex z))
-    (put 'add '(complex complex)
-      (lambda (z1 z2) (tag (add-complex z1 z2))))
-    (put 'sub '(complex complex)
-      (lambda (z1 z2) (tag (sub-complex z1 z2))))
-    (put 'mul '(complex complex)
-      (lambda (z1 z2) (tag (mul-complex z1 z2))))
-    (put 'div '(complex complex)
-      (lambda (z1 z2) (tag (div-complex z1 z2))))
-    (put 'real-part 'complex real-part)
-    (put 'imag-part 'complex imag-part)
-    (put 'magnitude 'complex magnitude)
-    (put 'angle 'complex angle)
+  (put 'add '(complex complex)
+    (lambda (z1 z2) (tag (add-complex z1 z2))))
+  (put 'sub '(complex complex)
+    (lambda (z1 z2) (tag (sub-complex z1 z2))))
+  (put 'mul '(complex complex)
+    (lambda (z1 z2) (tag (mul-complex z1 z2))))
+  (put 'div '(complex complex)
+    (lambda (z1 z2) (tag (div-complex z1 z2))))
+  (put 'real-part 'complex 
+    (lambda (z) (real-part z)))
+  (put 'imag-part 'complex imag-part)
+  (put 'magnitude 'complex magnitude)
+  (put 'angle 'complex angle)
 
-    (put 'raise '(complex)
-      (lambda (z) (error "complex doesn't have super type")))
-    (put 'make-from-real-imag 'complex
-      (lambda (x y) (tag (make-from-real-imag x y))))
-    (put 'make-from-mag-ang 'complex
-      (lambda (r a) (tag (make-from-mag-ang r a))))
-  'done)
+  (put 'raise '(complex)
+    (lambda (z) (error "complex doesn't have super type")))
+  (put 'make-from-real-imag 'complex
+    (lambda (x y) (tag (make-from-real-imag x y))))
+  (put 'make-from-mag-ang 'complex
+    (lambda (r a) (tag (make-from-mag-ang r a))))
+'complex-done)
 
 (define (make-complex-from-real-imag x y)
   ((get 'make-from-real-imag 'complex) x y))
@@ -245,3 +246,5 @@
 (raise (make-scheme-number 3)) ; (rational 3 . 1)
 
 (add (make-scheme-number 3) (make-rational 3 1)) ; (rational 6 . 1)
+
+(add (make-scheme-number 3) (make-complex-from-real-imag 2 1))
