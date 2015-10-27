@@ -14,8 +14,8 @@
     (lambda (x) (eq? x 0)))
   (put 'raise '(scheme-number)
     (lambda (x) (make-rational x 1)))
-  (put 'drop '(scheme-number) 
-    (lambda (x) (error "scheme-number doesn't have lower type")))
+;  (put 'drop '(scheme-number) 
+;    (lambda (x) (error "scheme-number doesn't have lower type")))
   (put 'make 'scheme-number (lambda (x) (tag x)))
   'done)
 
@@ -70,7 +70,7 @@
   (put '=zero? '(rational)
     (lambda (x) (=zero? x)))
   (put 'raise '(rational)
-    (lambda (x) (make-complex-from-real-imag x 0)))
+    (lambda (x) (make-complex-from-real-imag (inexact->exact (floor (/ (numer x) (denom x)))) 0)))
   ;; ----------- exercise 85
   (put 'drop '(rational) drop)
   (put 'make 'rational
@@ -101,9 +101,9 @@
                        (- (angle z1) (angle z2))))
 
   (define (equ? z1 z2)
-    (eq? (real-part z1) (real-part z2)) and (eq? (imag-part z1) (imag-part z2)))
+    (and (eq? (real-part z1) (real-part z2)) (eq? (imag-part z1) (imag-part z2))))
   (define (=zero? z)
-    (eq? (real-part z) 0) and (eq? (imag-part z) 0))
+    (and (eq? (real-part z) 0) (eq? (imag-part z) 0)))
 
   ;;;; -----------exercise 85.-----------------------
   (define (project z)
@@ -131,7 +131,6 @@
   (put 'make-from-mag-ang 'complex
        (lambda (r a) (tag (make-from-mag-ang r a))))
  
-  ; exercise 2.77
   (put 'real-part '(complex) real-part)
   (put 'imag-part '(complex) imag-part)
   (put 'magnitude '(complex) magnitude)
@@ -160,6 +159,7 @@
     (cons (* r (cos a)) (* r (sin a))))
   ;; interface to the rest of the system
   (define (tag x) (attach-tag 'rectangular x))
+
   (put 'real-part '(rectangular) real-part)
   (put 'imag-part '(rectangular) imag-part)
   (put 'magnitude '(rectangular) magnitude)
@@ -199,7 +199,8 @@
 (define (type-tag datum)
   (if (pair? datum)
     (car datum)
-    (error "Bad tagged datum: TYPE-TAG" datum)))
+    ;(error "Bad tagged datum: TYPE-TAG" datum)))
+    #f))
 (define (contents datum)
   (if (pair? datum)
     (cdr datum)
@@ -211,8 +212,10 @@
        (if proc
           ;(apply proc (map contents args))
           (let ((apl (apply proc (map contents args))))
-              (if (get 'drop apl) (drop apl)
-                  apl))
+              (if (get 'drop (list (type-tag apl))) 
+                ((get 'drop (list (type-tag apl))) (contents apl))
+                ;(drop apl)
+                apl))
           (if (= (length args) 2)
               (let ((type1 (car type-tags))
                     (type2 (cadr type-tags))
@@ -262,7 +265,9 @@
 (define (angle z)     (apply-generic 'angle z))
 (define (equ? x y)    (apply-generic 'equ? x y))
 (define (=zero? x)    (apply-generic '=zero? x))
-(define (raise x)     (apply-generic 'raise x))
+(define (raise x)     
+  (let ((proc (get 'raise (list (type-tag x)))))
+    (if proc (proc (contents x)))))
 
 (define (drop x)      (apply-generic 'drop x))
 
@@ -287,7 +292,6 @@
 ;; usage 
 (drop (make-rational 5 1)) ; (scheme-number . 5)
 (drop (make-rational 5 2)) ; (rational 5 . 2)
-(drop (make-complex-from-real-imag 3 0)) ; (rational 3 . 1)
+(drop (make-complex-from-real-imag 3 0)) ; (scheme-number . 3)
 (drop (make-complex-from-real-imag 3 5)) ; (complex rectangular 3 . 5)
-(add (make-complex-from-real-imag 2 0) (make-complex-from-real-imag 4 0))
-; (complex rectangular 6 . 0) ??
+(add (make-complex-from-real-imag 2 0) (make-complex-from-real-imag 4 0)) ;(rational 6 . 1)
