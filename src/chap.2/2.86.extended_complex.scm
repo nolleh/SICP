@@ -16,6 +16,10 @@
     (lambda (x) (make-rational x 1)))
   (put 'drop '(scheme-number) 
     (lambda (x) (error "scheme-number doesn't have lower type")))
+  (put 'sine '(scheme-number)
+    (lambda (x) (sin x)))
+  (put 'cos  '(scheme-number)
+    (lambda (x) (cos x)))
   (put 'make 'scheme-number (lambda (x) (tag x)))
   'done)
 
@@ -68,6 +72,11 @@
   (put 'raise '(rational)
     (lambda (x) (make-complex-from-real-imag x 0)))
   (put 'drop '(rational) drop)
+
+  (put 'sine '(rational)
+    (lambda (x) (sin (/ (numer x) (denom x)))))
+  (put 'cosine '(rational)
+    (lambda (x) (cos (/ (numer x) (denom x)))))
   (put 'make 'rational
     (lambda (n d) (tag (make-rat n d))))
   'done)
@@ -105,6 +114,14 @@
     (if (equ? (raise (project z)) (tag z)) (project z)
         (make-complex-from-real-imag (real-part z) (imag-part z))))
 
+  ;e=1/0!+1/1!+1/2!+1/3！…
+  (define (fact n)
+    (if (= n 0) 1
+        (* n (fact (- n 1)))))
+  (define (e limit)
+    (if (= limit 0) 1
+      (+ (/ 1 (fact limit))  (e (- limit 1)))))
+
   ;; interface to rest of the system
   (define (tag z) (attach-tag 'complex z))
   (put 'add '(complex complex)
@@ -131,9 +148,13 @@
   (put 'raise '(complex)
     (lambda (z) (error "complex doesn't have super type")))
   (put 'drop '(complex) drop)
-  ; 찾아보니 유사한게 오일러의 공식인 듯한데 .. 어떻게 x 로 정리 하는건지 모르겠다 ㅠㅠ;;  ?? 
-  (put 'ordinary '(complex) real-part)
-  (put 'rational '(complex) project)
+  ;오일러 공식 e^(ix) = cos x + i*sinx
+  (put 'sine '(complex) 
+    (lambda (z) (/ (- (expt (e 10) (* (imag-part z) (real-part z))) 
+      (cos (real-part z))) (imag-part z))))
+  (put 'cosine '(complex)
+    (lambda (z) (- (expt (e 10) (* (imag-part z) (real-part z))) 
+      (* (imag-part z) (sin (real-part z)))) ))
   'done)
 
 (define (make-complex-from-real-imag x y)
@@ -171,9 +192,9 @@
   (define (angle z) (cdr z))
   (define (make-from-mag-ang r a) (cons r a))
   (define (real-part z)
-    (* (magnitude z) (cos (angle z))))
+    (* (magnitude z) (cosine (angle z))))
   (define (imag-part z)
-    (* (magnitude z) (sin (angle z))))
+    (* (magnitude z) (sine (angle z))))
   (define (make-from-real-imag x y)
     (cons (sqrt (+ (square x) (square y)))
           (atan y x)))
@@ -259,8 +280,8 @@
 (define (=zero? x)    (apply-generic '=zero? x))
 (define (raise x)     (apply-generic 'raise x))
 (define (drop x)      (apply-generic 'drop x))
-(define (ordinary z)  (apply-generic 'ordinary z))
-(define (rational z)  (apply-generic 'rational z))
+(define (sine z)      (apply-generic 'sine z))
+(define (cosine z)    (apply-generic 'cosine z))
 
 ; super / tower ---> higher index
 (define tower (list 'scheme-number 'rational 'complex))
@@ -279,5 +300,6 @@
 (install-rectangular-package)
 (install-polar-package)
 
-(ordinary (make-complex-from-real-imag 1 3))
-(rational (make-complex-from-real-imag 1 3))
+(real-part (make-complex-from-mag-ang 2 (make-rational 3 1))) ; -1.9799849932008908
+(imag-part (make-complex-from-mag-ang 2 (make-rational 3 1))) ; 282.2400161197344e-3
+(imag-part (make-complex-from-mag-ang 2 (make-complex-from-real-imag 3 1))) ; 42.151057628687546
