@@ -37,7 +37,6 @@
     	(make-sparse-poly variable term-list))
 
 	(define (add-poly p1 p2)
-		;(display (list p1 p2))
 		(if (same-variable? (variable p1) (variable p2))
 				(make-poly (variable p1)
 					(add-terms (term-list p1)
@@ -53,7 +52,6 @@
 			(list p1 p2))))
 
 	(define (add-terms L1 L2)
-      ;(display (list L1 L2))
       (cond ((empty-termlist? L1) L2)
             ((empty-termlist? L2) L1)
             (else
@@ -126,8 +124,6 @@
 
 
 (define (negate x)     (apply-generic 'negate x))
-(define (adjoin-term term term-list) 
-	(apply-generic 'adjoin-term term term-list))
 
 ;; done polynomial
     
@@ -155,15 +151,43 @@
 
 (define (install-dense-polynomial-package)
 
-
 	(define (tag z) (attach-tag 'dense-poly z))
+
+	;; 좋은 방법은 아닌것 같지만...
+	;; add-poly 등도 적용이 되려면 term-list selector 에 대해 일관적인
+	;; 리턴이 되어야 한다.. (그렇지 않으면 섞여있을때 어떻게 더해야할지?)
+	; ((0 1) (3 2)) -> (1 0 0 2)
+	; concatmap 으로도 할 수 있을듯..
+	(define (convert-dense-form sparse-terms)
+		; 지금 넣을 인덱스 까지 비어 있는 인덱스를 채움
+		(define (iter-form dense-i terms)
+			(if (null? terms) 
+				()
+				(let ((t (car terms)))
+					(if (eq? (car t) dense-i)
+						(cons (cadr t) (iter-form (+ dense-i 1) (cdr terms)))
+					(cons 0 (iter-form (+ dense-i 1) terms))))))
+		(iter-form 0 sparse-terms))
+			
+	; (1 0 0 2) -> ((0 1) (3 2))
+	(define (convert-sparse-form dense-terms)
+		(define (iter-form dense-i terms)
+			(if (null? terms) ()
+				(if (eq? 0 (car terms))
+					(iter-form (+ dense-i 1) (cdr terms))
+					(cons (cons dense-i (list (car terms)))
+						(iter-form (+ dense-i 1) (cdr terms))))))
+		(iter-form 0 dense-terms))
+		
+
 	; for tagging
 	(define (make-dense-poly variable term-list)
-		(tag (cons variable term-list)))
+		(tag (cons variable (convert-dense-form term-list))))
 
 	; variable and term list is appear in unwrapped polynomial.
 	(define (variable p) (car p))
-	(define (term-list p) (cdr p))
+	(define (term-list p) 
+		(convert-sparse-form (cdr p)))
 
     (put 'make-poly '(dense-poly) make-dense-poly)
 	(put 'variable '(dense-poly) variable)
@@ -173,16 +197,6 @@
 
 (define (variable p) (apply-generic 'variable p))
 (define (term-list p) (apply-generic 'term-list p))
-;(define (make-sparse-term order coeff)
-;	((get 'make-term '(sparse-poly)) order coeff))
-;(define (make-dense-term order coeff)
-;	((get 'make-term '(dense-poly)) order coeff))
-
-(define (sparse-adjoin-term t l)
-	((get 'adjoin-term '(sparse-poly)) t l))
-(define (dense-adjoin-term t l)
-	((get 'adjoin-term '(dense-poly)) t l))
-
 
 (install-polynomial-package)
 (install-sparse-polynomial-package)
@@ -195,6 +209,6 @@
 
 (define poly2 (make-dense-poly 'x 
 	(list (list 2 (make-scheme-number 3)))))
-(display poly2) ;(polynomial dense-poly x (scheme-number . 3))
+(display poly2) ;(polynomial dense-poly x 0 0 (scheme-number . 3))
 
-(add poly poly2)
+(add poly poly2) ;(polynomial sparse-poly x (2 (scheme-number . 5)))
