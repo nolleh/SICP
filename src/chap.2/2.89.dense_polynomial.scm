@@ -17,19 +17,24 @@
 	(define (same-variable? v1 v2)
   		(and (variable? v1) (variable? v2) (eq? v1 v2)))
 
+	(define (adjoin-term term term-list)
+    	(if (=zero? (coeff term))
+        	term-list
+        	(cons term term-list)))
+
     (define (the-empty-termlist) '())
     (define (first-term term-list) (car term-list))
     (define (rest-terms term-list) (cdr term-list))
     (define (empty-termlist? term-list) (null? term-list))
-
+    (define (make-term order coeff) (list order coeff))
+    (define (order term) (car term))
+    (define (coeff term) (cadr term))
     ; Doesn't know what represent type to be chosen.
     ; default : sparse. 
     ; (similary, the complex package 
 	; also does not have strict policy)
     (define (make-poly variable term-list)
     	(make-sparse-poly variable term-list))
-    (define (adjoin-term term term-list)
-		(sparse-adjoin-term term term-list))
 
 	(define (add-poly p1 p2)
 		;(display (list p1 p2))
@@ -141,17 +146,10 @@
 	(define (variable p) (car p))
 	(define (term-list p) (cdr p))
 
-	; it only differ from dense, by making term-list
-	; in dense, it add without order....
-	(define (adjoin-term term term-list)
-      	(if (=zero? (coeff term))
-        	term-list
-        	(cons term term-list)))
 
     (put 'make-poly '(sparse-poly) make-sparse-poly)
 	(put 'variable '(sparse-poly) variable)
 	(put 'term-list '(sparse-poly) term-list)
-    (put 'adjoin-term '(sparse-poly) adjoin-term)
 
 	'done-sparse-polynomial)
 
@@ -167,17 +165,9 @@
 	(define (variable p) (car p))
 	(define (term-list p) (cdr p))
 
-	; it only differ from dense, by making term-list
-	; in dense, it add without order....
-	(define (adjoin-term term term-list)
-      	(if (=zero? (coeff term))
-        	term-list
-        	(cons (coeff term) term-list)))
-
     (put 'make-poly '(dense-poly) make-dense-poly)
 	(put 'variable '(dense-poly) variable)
 	(put 'term-list '(dense-poly) term-list)
-    (put 'adjoin-term '(dense-poly) adjoin-term)
 	'done-dense-polynomial)
 
 
@@ -193,11 +183,6 @@
 (define (dense-adjoin-term t l)
 	((get 'adjoin-term '(dense-poly)) t l))
 
-;(define (adjoin-term term p)
-;	(display "global adjoin-term")
-;	(display p)
-;	((get 'adjoin-term (type-tag p)) term (term-list p)))
-;; done sparse-polynomial
 
 (install-polynomial-package)
 (install-sparse-polynomial-package)
