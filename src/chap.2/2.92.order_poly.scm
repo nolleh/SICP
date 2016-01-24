@@ -129,15 +129,24 @@
       (mul-term-by-all-terms (make-term 0 
           (make-scheme-number -1)) (term-list p))))
 
+  (define (flatmap f lst)
+    (apply append (map f lst)))
+
+  (define (find predicate list)
+    (if (null? list) #f
+    (if (predicate (car list)) (car list)
+        (find predicate (cdr list)))))
+
   (define var-tower '(x y z))
   ; ing -> sudo code (only idea)
   ; 1. 대상 poly 들의 변수들 - tower 순으로 추출 - x,z / z
   (define (extract-variables p)
-    ;(flatMap (lambda (sel-var) (
-      ;(filter (lambda (find-var) (eq? sel-var find-var)))
-        (map (lambda (t) ( ; coeff - poly check?
-          (variable (coeff t))) (term-list p))))
-    ; )) var-tower)))
+    (map (lambda (sel-var) 
+      (find (lambda (var) (if (eq? sel-var var) #t #f) )
+        (map (lambda (t) 
+          (variable (coeff t))) (term-list p)))
+     ) var-tower))
+
   ; 2. 두 poly 변수들에서 겹치는 변수를 찾음 - z
   (define (matched-variable vl1 vl2)
     (car (filter (lambda (vl) (not eq? '0))
@@ -268,11 +277,10 @@
 (define poly (make-sparse-poly 'z 
   (list (list 1 (make-scheme-number 1)))))
 
-(define poly2 (make-sparse-poly 'x 
-  (list (list 2 poly) 
-        (list 0 (make-scheme-number -1)))))
+(define poly2 (make-sparse-poly 'y 
+  (list (list 1 (make-scheme-number 1)))))
 
-(display poly) 
-(display poly2)
+(define complex-poly (make-sparse-poly 'x 
+  (list (list 1 poly) (list 0 poly2))))
 
-(display (test poly))
+(display (test complex-poly))
