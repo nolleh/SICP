@@ -121,7 +121,7 @@
       (list p1 p2))))
 
   (define (gcd-terms a b)
-    (if (empty-termlist? b)
+    (if (empty-termlist? b) 
       a
       (gcd-terms b (remainder-terms a b)))) 
 
@@ -132,6 +132,7 @@
     (make-poly (variable p)
       (mul-term-by-all-terms (make-term 0 
           (make-scheme-number -1)) (term-list p))))
+
 
   ;; interface to rest of the system
   (define (tag p) (attach-tag 'polynomial p))
@@ -173,11 +174,14 @@
 
 (install-polynomial-package)
 
-(define p1 (make-poly 'x 
-  '((4 1) (3 -1) (2 -2) (1 2))))
+(define p1 (make-poly 'x '((2 1) (1 2) (0 1))))
+(define p2 (make-poly 'x '((2 11) (0 7))))
+(define p3 (make-poly 'x '((1 13) (0 5))))
 
-(define p2 (make-poly 'x 
-  '((3 1) (1 -1))))
+(define q1 (mul p1 p2))
+;(polynomial x (4 (scheme-number . 11)) (3 (scheme-number . 22)) (2 (scheme-number . 18)) (1 (scheme-number . 14)) (0 (scheme-number . 7)))
 
-(greatest-common-divisor p1 p2) 
-; (polynomial x (2 (scheme-number . -1)) (1 (scheme-number . 1)))
+(define q2 (mul p1 p3))
+;(polynomial x (3 (scheme-number . 13)) (2 (scheme-number . 31)) (1 (scheme-number . 23)) (0 (scheme-number . 5)))
+
+;(greatest-common-divisor q1 q2)
