@@ -214,7 +214,13 @@
     (cdr datum)
     (error "Bad tagged datum: CONTENTS" datum)))
 
-(define (apply-generic op . args)
+(define (as-scheme x)
+  (if (not (type-tag x)) 
+    (make-scheme-number x)
+    x))
+
+(define (apply-generic op . args2)
+  (let ((args (map as-scheme args2)))
    (let ((type-tags (map type-tag args)))
      (let ((proc (get op type-tags)))
        (if proc
@@ -240,7 +246,7 @@
                                     (apply-generic op a1 (raise-until a2 (* -1 diff))))))
                         (error "No method for these types" (list op type-tags) )))))
               (error "No method for these types"
-                    (list op type-tags)))))))
+                    (list op type-tags))))))))
 
 ; get / put
 (define global-array '())
@@ -264,16 +270,23 @@
   (get-helper (list op type) global-array))
 
 
-(define (add x y)     (apply-generic 'add x y))
-(define (sub x y)     (apply-generic 'sub x y))
-(define (mul x y)     (apply-generic 'mul x y))
-(define (div x y)     (apply-generic 'div x y))
+(define (add x y) (apply-generic 'add x y))
+(define (sub x y) (apply-generic 'sub x y))
+(define (mul x y) (apply-generic 'mul x y))
+(define (div x y) (apply-generic 'div x y))
+
+;(define (as-scheme x)
+;  (if (not (type-tag x)) 
+;    (make-scheme-number x)
+;    x))
+
 (define (real-part z) (apply-generic 'real-part z))
 (define (imag-part z) (apply-generic 'imag-part z))
 (define (magnitude z) (apply-generic 'magnitude z))
 (define (angle z)     (apply-generic 'angle z))
 (define (equ? x y)    (apply-generic 'equ? x y))
-(define (=zero? x)    (apply-generic '=zero? x))
+(define (=zero? x)    
+  (apply-generic '=zero? (as-scheme x)))
 (define (raise x)     
   (let ((proc (get 'raise (list (type-tag x)))))
     (if proc (proc (contents x)))))
