@@ -123,17 +123,24 @@
 
   (define (gcd-terms a b)
     (if (empty-termlist? b) 
-      a
-      (gcd-terms b (remainder-terms a b)))) 
+      (car (div-terms a 
+        (list (make-term 0 (apply gcd (map coeff (term-list a))))))) 
+      (gcd-terms b (pseudo-remainder-terms a b)))) 
 
   (define (remainder-terms a b)
     (cadr (div-terms a b)))
+
+  (define (pseudo-remainder-terms a b)
+    (let ((integerizing-factor
+      ;c^(1+O1−O2)
+      (list (make-term 0 (expt (coeff (first-term b)) 
+              (+ 1 (- (order (first-term a)) (order (first-term b))))) )) ))
+      (cadr (div-terms (mul-terms a integerizing-factor) b))))
 
   (define (negate p)
     (make-poly (variable p)
       (mul-term-by-all-terms (make-term 0 
           (make-scheme-number -1)) (term-list p))))
-
 
   ;; interface to rest of the system
   (define (tag p) (attach-tag 'polynomial p))
@@ -169,7 +176,7 @@
 (define (greatest-common-divisor p1 p2)
   (apply-generic 'gcd p1 p2))
 
-(define (negate x)     (apply-generic 'negate x))
+(define (negate x) (apply-generic 'negate x))
 (define (variable p) (apply-generic 'variable p))
 (define (term-list p) (apply-generic 'term-list p))
 
@@ -180,10 +187,9 @@
 (define p3 (make-poly 'x '((1 13) (0 5))))
 
 (define q1 (mul p1 p2))
-;(polynomial x (4 11) (3 22) (2 18) (1 14) (0 7))
-
+; (polynomial x (4 11) (3 22) (2 18) (1 14) (0 7))
 (define q2 (mul p1 p3))
-;(polynomial x (3 13) (2 31) (1 23) (0 5))
-
+; (polynomial x (3 13) (2 31) (1 23) (0 5))
 (greatest-common-divisor q1 q2)
-;(polynomial x (2 1458/169) (1 2916/169) (0 1458/169))
+;1: (polynomial x (2 1458) (1 2916) (0 1458))
+;2: (polynomial x (2 1) (1 2) (0 1))

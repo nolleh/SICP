@@ -1,6 +1,7 @@
 ; define dense polynomials .. 
 ; other packages
-(load "C:\\Users\\Geng\\Documents\\workspace_scala\\sicp\\src\\chap.2\\2.8X.packages.scm")
+;(load "C:\\Users\\Geng\\Documents\\workspace_scala\\sicp\\src\\chap.2\\2.8X.packages.scm")
+(load "~/Documents/workspace_github/sicp/src/chap.2/2.8X.packages.scm")
 
 (define (install-polynomial-package)
   (define (make-poly variable term-list)
@@ -116,7 +117,7 @@
   (define (gcd-poly p1 p2)
     (if (same-variable? (variable p1) (variable p2))
         (make-poly (variable p1)
-          (remainder-terms (term-list p1) (term-list p2)))
+          (gcd-terms (term-list p1) (term-list p2)))
         (error "Polys not in same var: GCD-POLY"
       (list p1 p2))))
 
@@ -180,4 +181,5 @@
   '((3 1) (1 -1))))
 
 (greatest-common-divisor p1 p2) 
-; (polynomial x (2 (scheme-number . -1)) (1 (scheme-number . 1)))
+; (polynomial x (1 -2))
+
