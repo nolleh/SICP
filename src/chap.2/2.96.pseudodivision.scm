@@ -182,14 +182,14 @@
 
 (install-polynomial-package)
 
-(define p1 (make-poly 'x '((2 1) (1 2) (0 1))))
+(define p1 (make-poly 'x '((2 1) (1 -2) (0 1))))
 (define p2 (make-poly 'x '((2 11) (0 7))))
 (define p3 (make-poly 'x '((1 13) (0 5))))
 
 (define q1 (mul p1 p2))
-; (polynomial x (4 11) (3 22) (2 18) (1 14) (0 7))
+; (polynomial x (4 11) (3 -22) (2 18) (1 -14) (0 7))
 (define q2 (mul p1 p3))
-; (polynomial x (3 13) (2 31) (1 23) (0 5))
+; (polynomial x (3 13) (2 -21) (1 3) (0 5))
 (greatest-common-divisor q1 q2)
-;1: (polynomial x (2 1458) (1 2916) (0 1458))
-;2: (polynomial x (2 1) (1 2) (0 1))
+;1: (polynomial x (2 1458) (1 -2916) (0 1458))
+;2: (polynomial x (2 1) (1 -2) (0 1))

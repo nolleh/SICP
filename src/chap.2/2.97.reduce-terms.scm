@@ -119,21 +119,51 @@
         (make-poly (variable p1)
           (gcd-terms (term-list p1) (term-list p2)))
         (error "Polys not in same var: GCD-POLY"
-      (list p1 p2))))
+          (list p1 p2))))
 
   (define (gcd-terms a b)
-    (if (empty-termlist? b) 
-      a
-      (gcd-terms b (remainder-terms a b)))) 
+    (if (empty-termlist? b)
+      (car (div-terms a 
+        (list (make-term 0 (apply gcd (map coeff a)))))) 
+      (gcd-terms b (pseudo-remainder-terms a b)))) 
 
   (define (remainder-terms a b)
     (cadr (div-terms a b)))
+
+  (define (pseudo-remainder-terms a b)
+    (let ((integerizing-factor
+      ;c^(1+O1−O2)
+      (list (make-term 0 (expt (coeff (first-term b)) 
+              (+ 1 (- (order (first-term a)) (order (first-term b))))) )) ))
+      (cadr (div-terms (mul-terms a integerizing-factor) b))))
+
+  (define (reduce-poly p1 p2)
+    (if (same-variable? (variable p1) (variable p2))
+        (let* ((var (variable p1))
+               (reduced (reduce-terms (term-list p1) (term-list p2))))
+          (list (tag (make-poly (variable p1) (car reduced)))
+                (tag (make-poly (variable p2) (cadr reduced)))))
+        (error "Polys not in same var: REDUCE-POLY"
+          (list p1 p2))))
+
+  (define (reduce-terms n d)
+    (let* ((res-gcd (gcd-terms n d))
+           (o1 (max (order (first-term n)) 
+                    (order (first-term d))))
+           (o2 (order (first-term res-gcd)))
+           (factor (make-term 0 (expt (coeff (first-term res-gcd))
+                   (- (+ 1 o1) o2))))
+           (res-n-div (car (div-terms (mul-term-by-all-terms factor n) res-gcd)))
+           (res-d-div (car (div-terms (mul-term-by-all-terms factor d) res-gcd)))
+           (coeffs (map coeff (append res-n-div res-d-div)))
+           (coeffs-gcd-term (make-term 0 (apply gcd coeffs))))
+      (list (car (div-terms res-n-div (list coeffs-gcd-term)))
+            (car (div-terms res-d-div (list coeffs-gcd-term))))))
 
   (define (negate p)
     (make-poly (variable p)
       (mul-term-by-all-terms (make-term 0 
           (make-scheme-number -1)) (term-list p))))
-
 
   ;; interface to rest of the system
   (define (tag p) (attach-tag 'polynomial p))
@@ -160,7 +190,8 @@
   (put 'term-list '(polynomial) term-list)
   (put 'gcd '(polynomial polynomial) 
     (lambda (p1 p2) (tag (gcd-poly p1 p2))))
-
+  (put 'reduce '(polynomial polynomial)
+    reduce-poly)
   'done-polynomial)
 
 (define (make-poly var terms)
@@ -169,21 +200,34 @@
 (define (greatest-common-divisor p1 p2)
   (apply-generic 'gcd p1 p2))
 
-(define (negate x)     (apply-generic 'negate x))
+(define (reduce p1 p2)
+  (apply-generic 'reduce p1 p2))
+
+(define (negate x) (apply-generic 'negate x))
 (define (variable p) (apply-generic 'variable p))
 (define (term-list p) (apply-generic 'term-list p))
 
 (install-polynomial-package)
 
-(define p1 (make-poly 'x '((2 1) (1 -2) (0 1))))
-(define p2 (make-poly 'x '((2 11) (0 7))))
-(define p3 (make-poly 'x '((1 13) (0 5))))
+;(define p1 (make-poly 'x '((2 1) (1 -2) (0 1))))
+;(define p2 (make-poly 'x '((2 11) (0 7))))
+;(define p3 (make-poly 'x '((1 13) (0 5))))
 
-(define q1 (mul p1 p2))
-;(polynomial x (4 11) (3 22) (2 18) (1 14) (0 7))
+;(define q1 (mul p1 p2))
+;; (polynomial x (4 11) (3 -22) (2 18) (1 -14) (0 7))
+;(define q2 (mul p1 p3))
+;; (polynomial x (3 13) (2 -21) (1 3) (0 5))
+;(reduce q1 q2)
+;; ((polynomial x (2 11) (0 7)) (polynomial x (1 13) (0 5)))
 
-(define q2 (mul p1 p3))
-;(polynomial x (3 13) (2 31) (1 23) (0 5))
+(define  p1 (make-poly 'x '((1 1) (0  1))))
+(define  p2 (make-poly 'x '((3 1) (0 -1))))
+(define  p3 (make-poly 'x '((1 1))))
+(define  p4 (make-poly 'x '((2 1) (0 -1))))
+(define rf1 (make-rational p1 p2))
+;(rational (polynomial x (1 -1) (0 -1)) (polynomial x (3 -1) (0 1)))
 
-(greatest-common-divisor q1 q2)
-;(polynomial x (2 1458/169) (1 -2916/169) (0 1458/169))
+(define rf2 (make-rational p3 p4))
+;(rational (polynomial x (1 1)) (polynomial x (2 1) (0 -1)))
+(add rf1 rf2)
+;(rational (polynomial x (4 1) (3 1) (2 1) (1 -2) (0 -1)) (polynomial x (5 1) (3 -1) (2 -1) (0 1)))
