@@ -124,7 +124,7 @@
   (define (gcd-terms a b)
     (if (empty-termlist? b) 
       (car (div-terms a 
-        (list (make-term 0 (apply gcd (map coeff (term-list a))))))) 
+        (list (make-term 0 (apply gcd (map coeff a))))))
       (gcd-terms b (pseudo-remainder-terms a b)))) 
 
   (define (remainder-terms a b)
