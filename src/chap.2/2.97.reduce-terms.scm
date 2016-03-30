@@ -141,8 +141,8 @@
     (if (same-variable? (variable p1) (variable p2))
         (let* ((var (variable p1))
                (reduced (reduce-terms (term-list p1) (term-list p2))))
-          (list (tag (make-poly (variable p1) (car reduced)))
-                (tag (make-poly (variable p2) (cadr reduced)))))
+          (list (make-poly (variable p1) (car reduced))
+                (make-poly (variable p2) (cadr reduced))))
         (error "Polys not in same var: REDUCE-POLY"
           (list p1 p2))))
 
@@ -191,7 +191,7 @@
   (put 'gcd '(polynomial polynomial) 
     (lambda (p1 p2) (tag (gcd-poly p1 p2))))
   (put 'reduce '(polynomial polynomial)
-    reduce-poly)
+    (lambda (p1 p2) (map tag (reduce-poly p1 p2))))
   'done-polynomial)
 
 (define (make-poly var terms)
