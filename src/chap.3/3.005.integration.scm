@@ -7,13 +7,13 @@
 
 ; (x − 5)^2 + (y − 7)^2 ≤ 3^2
 (define (is-in-range x1 x2 y1 y2)
-  (let* ((r (- x1 x2))
-        (cx (+ x2 (/ r 2)))
-        (cy (+ y2 (/ r 2)))
+  (let* ((r (/ (- x1 x2) 2))
+        (cx (+ x2 r))
+        (cy (+ y2 r))
         (x (random-in-range x2 x1))
         (y (random-in-range y2 y1)))
     (lambda ()
-      (<= (expt (- x cx) 2) (expt (- y cy) 2)
+      (<= (+ (expt (- x cx) 2) (expt (- y cy) 2))
         (expt r 2)))))
 
 (define (random-in-range low high)
@@ -32,4 +32,4 @@
                     trials-passed))))
   (iter trials 0))
 
-(estimate-integral is-in-range 5 0 5 0 10)
+(estimate-integral is-in-range 5 0 5 0 1000)

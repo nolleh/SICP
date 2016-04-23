@@ -30,5 +30,5 @@ wrap-pw)
 (define paul-acc
   (make-joint peter-acc 'open-sesame 'rosebud))
 
-((peter-acc 'open-sesame 'withdraw) 30)
-((paul-acc 'rosebud 'withdraw) 30)
+((peter-acc 'open-sesame 'withdraw) 30) ; 70
+((paul-acc 'rosebud 'withdraw) 30) ; 30
