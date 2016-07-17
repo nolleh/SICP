@@ -1,0 +1,36 @@
+(define (cycle? x)
+  (let ((pairs '()))
+    (define (inner-pairs x)
+      (cond ((symmetric? pairs) #t)
+            ((not (pair? x)) #f)
+            (else 
+              (begin (set! pairs (cons (car x) pairs))
+                (or (inner-pairs (car x)) (inner-pairs (cdr x)))))))
+  (inner-pairs x)))
+
+(define (symmetric? set)
+  (let ((splited (split set)))
+    (cond ((null? set) #f)
+          ((same? (car splited) (cdr splited)) #t)
+          (else #f))))
+
+(define (split lst)
+  (let ((half (quotient (length lst) 2)))
+    (cons (take lst half)
+          (drop lst half))))
+
+(define (same? s1 s2)
+  (cond ((not (eq? (length s1) (length s2))) #f)
+        ((or (null? s1) (null? s2)) #t)
+        ((eq? (car s1) (car s2)) 
+          (same? (cdr s1) (cdr s2)))
+        (else #f)))
+
+(define (make-cycle x)
+  (set-cdr! (last-pair x) x)
+    x)
+
+(cycle? '(a b))
+(cycle? '(a b b a c))
+(cycle? (make-cycle '(a b)))
+(cycle? (make-cycle '(a b c)))
